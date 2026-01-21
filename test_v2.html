@@ -1156,15 +1156,17 @@
         // ============================================
         // Configuration
         // ============================================
+        const GITHUB_BASE = 'https://raw.githubusercontent.com/noodle-kim/snf-dashboard-202506-daily/main/';
+        
         const CONFIG = {
             csvPaths: {
-                category1: '1_떠오르는 출시 예정 게임.csv',
-                category2: '2_인기 체험판.csv',
-                category3: '3_인기 출시 예정 게임.csv',
-                participants: 'SNF 참여 게임 숫자.csv',
-                liveStream: '라이브 방송 현황.csv',
-                aiInsights: 'ai_insights.csv',
-                newsArticles: 'news_articles.csv'
+                category1: GITHUB_BASE + encodeURIComponent('1_떠오르는 출시 예정 게임.csv'),
+                category2: GITHUB_BASE + encodeURIComponent('2_인기 체험판.csv'),
+                category3: GITHUB_BASE + encodeURIComponent('3_인기 출시 예정 게임.csv'),
+                participants: GITHUB_BASE + encodeURIComponent('SNF 참여 게임 숫자.csv'),
+                liveStream: GITHUB_BASE + encodeURIComponent('라이브 방송 현황.csv'),
+                aiInsights: GITHUB_BASE + 'ai_insights.csv',
+                newsArticles: GITHUB_BASE + 'news_articles.csv'
             }
         };
 
