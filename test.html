@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNF Daily Dashboard</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Papa Parse for CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        /* ============================================
+           CSS Variables - Color System
+           ============================================ */
+        :root {
+            --primary-bg: #0a0a0f;
+            --secondary-bg: #13131a;
+            --card-bg: #1a1a24;
+            --accent-purple: #8b5cf6;
+            --accent-purple-light: #a78bfa;
+            --accent-purple-dark: #6d28d9;
+            --accent-gradient: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-color: #2d2d3a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass-bg: rgba(26, 26, 36, 0.8);
+            --glass-border: rgba(139, 92, 246, 0.2);
+        }
+
+        /* ============================================
+           Reset & Base Styles
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           Layout
+           ============================================ */
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ============================================
+           Header
+           ============================================ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-badge {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .date-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .date-selector label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .date-selector select {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .date-selector select:hover,
+        .date-selector select:focus {
+            border-color: var(--accent-purple);
+        }
+
+        /* ============================================
+           AI Insight Section
+           ============================================ */
+        .ai-insight-section {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-insight-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+        }
+
+        .ai-insight-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .ai-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-gradient);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .ai-insight-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .ai-insight-content {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .ai-insight-content .highlight {
+            color: var(--accent-purple-light);
+            font-weight: 500;
+        }
+
+        .insight-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .insight-list li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .insight-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent-purple);
+        }
+
+        /* ============================================
+           Stats Cards
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-purple);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-card-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card-icon {
+            font-size: 20px;
+        }
+
+        .stat-card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-card-change {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-card-change.positive {
+            color: var(--success);
+        }
+
+        .stat-card-change.negative {
+            color: var(--danger);
+        }
+
+        /* ============================================
+           Rankings Section
+           ============================================ */
+        .rankings-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--accent-purple);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .rankings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 1200px) {
+            .rankings-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .rankings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ranking-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .ranking-card-header {
+            background: var(--secondary-bg);
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ranking-card-header .icon {
+            font-size: 20px;
+        }
+
+        .ranking-card-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .ranking-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .ranking-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ranking-list::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+        }
+
+        .ranking-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .ranking-item:hover {
+            background: var(--secondary-bg);
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+
+        .rank-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffb800); color: #000; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #b87333); color: #fff; }
+        .rank-default { background: var(--secondary-bg); color: var(--text-secondary); }
+
+        .game-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .game-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .game-name:hover {
+            color: var(--accent-purple-light);
+        }
+
+        .game-developer {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-tags {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: var(--secondary-bg);
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .view-more-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary-bg);
+            border: none;
+            color: var(--accent-purple);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .view-more-btn:hover {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        /* ============================================
+           Live Stream Section
+           ============================================ */
+        .live-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .live-section .section-header {
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        .live-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .live-stat-card {
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .live-stat-day {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .live-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .live-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================
+           Loading State
+           ============================================ */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           Modal
+           ============================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* ============================================
+           Footer
+           ============================================ */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 24px;
+        }
+
+        .footer span {
+            color: var(--accent-purple);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h1>🎮 Steam Next Fest</h1>
+                <span class="header-badge" id="eventBadge">2025년 6월</span>
+            </div>
+            <div class="date-selector">
+                <label for="dateSelect">날짜 선택:</label>
+                <select id="dateSelect">
+                    <!-- 동적으로 채워짐 -->
+                </select>
+            </div>
+        </header>
+
+        <!-- AI Insight Section -->
+        <section class="ai-insight-section">
+            <div class="ai-insight-header">
+                <div class="ai-icon">🤖</div>
+                <h2>AI Daily Insight</h2>
+            </div>
+            <div class="ai-insight-content" id="aiInsightContent">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    AI 인사이트를 불러오는 중...
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Cards -->
+        <section class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">참여 게임</span>
+                    <span class="stat-card-icon">🎮</span>
+                </div>
+                <div class="stat-card-value" id="totalGames">-</div>
+                <div class="stat-card-change positive" id="gamesChange">
+                    <!-- 동적 데이터 -->
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">라이브 방송</span>
+                    <span class="stat-card-icon">📺</span>
+                </div>
+                <div class="stat-card-value" id="totalStreams">-</div>
+                <div class="stat-card-change" id="streamsChange">
+                    <!-- 동적 데이터 -->
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">총 시청자</span>
+                    <span class="stat-card-icon">👥</span>
+                </div>
+                <div class="stat-card-value" id="totalViewers">-</div>
+                <div class="stat-card-change" id="viewersChange">
+                    <!-- 동적 데이터 -->
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">진행 일차</span>
+                    <span class="stat-card-icon">📅</span>
+                </div>
+                <div class="stat-card-value" id="currentDay">-</div>
+                <div class="stat-card-change" id="dayInfo">
+                    <!-- 동적 데이터 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Rankings Section -->
+        <section class="rankings-section">
+            <div class="section-header">
+                <h2 class="section-title">📊 Daily Rankings</h2>
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-view="top10">TOP 10</button>
+                    <button class="tab-btn" data-view="top50">TOP 50</button>
+                </div>
+            </div>
+            <div class="rankings-grid" id="rankingsGrid">
+                <!-- 떠오르는 출시 예정 게임 -->
+                <div class="ranking-card">
+                    <div class="ranking-card-header">
+                        <span class="icon">🔥</span>
+                        <h3>떠오르는 출시 예정</h3>
+                    </div>
+                    <ul class="ranking-list" id="rankingList1">
+                        <li class="loading">
+                            <div class="loading-spinner"></div>
+                            데이터 로딩 중...
+                        </li>
+                    </ul>
+                    <button class="view-more-btn" data-category="1">더보기 →</button>
+                </div>
+
+                <!-- 인기 체험판 -->
+                <div class="ranking-card">
+                    <div class="ranking-card-header">
+                        <span class="icon">🎮</span>
+                        <h3>인기 체험판</h3>
+                    </div>
+                    <ul class="ranking-list" id="rankingList2">
+                        <li class="loading">
+                            <div class="loading-spinner"></div>
+                            데이터 로딩 중...
+                        </li>
+                    </ul>
+                    <button class="view-more-btn" data-category="2">더보기 →</button>
+                </div>
+
+                <!-- 인기 출시 예정 게임 -->
+                <div class="ranking-card">
+                    <div class="ranking-card-header">
+                        <span class="icon">⭐</span>
+                        <h3>인기 출시 예정</h3>
+                    </div>
+                    <ul class="ranking-list" id="rankingList3">
+                        <li class="loading">
+                            <div class="loading-spinner"></div>
+                            데이터 로딩 중...
+                        </li>
+                    </ul>
+                    <button class="view-more-btn" data-category="3">더보기 →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Stream Section -->
+        <section class="live-section">
+            <div class="section-header">
+                <h2 class="section-title">📺 라이브 방송 현황</h2>
+            </div>
+            <div class="chart-container">
+                <canvas id="liveChart"></canvas>
+            </div>
+            <div class="live-stats-grid" id="liveStatsGrid">
+                <!-- 동적으로 채워짐 -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Data is dynamically loaded from <span>GitHub CSV</span> • Last updated: <span id="lastUpdated">-</span></p>
+        </footer>
+    </div>
+
+    <!-- Modal for Full Rankings -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">TOP 50 Rankings</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <ul class="ranking-list" id="modalRankingList">
+                    <!-- 동적으로 채워짐 -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // Configuration - CSV 파일 경로 설정
+        // ============================================
+        const CONFIG = {
+            // 로컬 테스트용 경로 (현재 폴더 기준)
+            // GitHub에 업로드 후 raw URL로 변경 예정
+            csvPaths: {
+                category1: '1_떠오르는 출시 예정 게임.csv',
+                category2: '2_인기 체험판.csv',
+                category3: '3_인기 출시 예정 게임.csv',
+                participants: 'SNF 참여 게임 숫자.csv',
+                liveStream: '라이브 방송 현황.csv',
+                // AI 인사이트 CSV (향후 추가 예정)
+                aiInsights: 'ai_insights.csv'
+            },
+            // GitHub Raw URL 템플릿 (배포 시 활성화)
+            // githubBase: 'https://raw.githubusercontent.com/{user}/{repo}/main/',
+            defaultDate: null, // 자동으로 최신 날짜 선택
+            displayCount: {
+                top10: 10,
+                top50: 50
+            }
+        };
+
+        // ============================================
+        // Global State
+        // ============================================
+        let appState = {
+            currentDate: null,
+            currentView: 'top10',
+            data: {
+                category1: [],
+                category2: [],
+                category3: [],
+                participants: [],
+                liveStream: [],
+                aiInsights: []
+            },
+            availableDates: [],
+            chart: null
+        };
+
+        // ============================================
+        // CSV Data Loader
+        // ============================================
+        async function loadCSV(filePath) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(filePath, {
+                    download: true,
+                    header: true,
+                    encoding: 'UTF-8',
+                    complete: (results) => {
+                        resolve(results.data.filter(row => 
+                            Object.values(row).some(val => val && val.trim())
+                        ));
+                    },
+                    error: (error) => {
+                        console.error(`Error loading ${filePath}:`, error);
+                        resolve([]); // 에러 시 빈 배열 반환
+                    }
+                });
+            });
+        }
+
+        async function loadAllData() {
+            try {
+                const [cat1, cat2, cat3, participants, liveStream] = await Promise.all([
+                    loadCSV(CONFIG.csvPaths.category1),
+                    loadCSV(CONFIG.csvPaths.category2),
+                    loadCSV(CONFIG.csvPaths.category3),
+                    loadCSV(CONFIG.csvPaths.participants),
+                    loadCSV(CONFIG.csvPaths.liveStream)
+                ]);
+
+                appState.data.category1 = cat1;
+                appState.data.category2 = cat2;
+                appState.data.category3 = cat3;
+                appState.data.participants = participants;
+                appState.data.liveStream = liveStream;
+
+                // 사용 가능한 날짜 추출
+                extractAvailableDates();
+
+                // AI 인사이트 로드 시도 (없으면 기본값)
+                try {
+                    appState.data.aiInsights = await loadCSV(CONFIG.csvPaths.aiInsights);
+                } catch (e) {
+                    console.log('AI Insights CSV not found, using default');
+                    appState.data.aiInsights = [];
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return false;
+            }
+        }
+
+        // ============================================
+        // Data Processing
+        // ============================================
+        function extractAvailableDates() {
+            const dateSet = new Set();
+            
+            // 모든 카테고리에서 날짜 추출
+            [appState.data.category1, appState.data.category2, appState.data.category3].forEach(data => {
+                data.forEach(row => {
+                    if (row['날짜']) {
+                        dateSet.add(row['날짜']);
+                    }
+                });
+            });
+
+            appState.availableDates = Array.from(dateSet).sort((a, b) => {
+                return new Date(a.replace(/년|월|일/g, match => {
+                    if (match === '년') return '/';
+                    if (match === '월') return '/';
+                    return '';
+                })) - new Date(b.replace(/년|월|일/g, match => {
+                    if (match === '년') return '/';
+                    if (match === '월') return '/';
+                    return '';
+                }));
+            });
+
+            // 최신 날짜를 기본값으로 설정
+            if (appState.availableDates.length > 0) {
+                appState.currentDate = appState.availableDates[appState.availableDates.length - 1];
+            }
+        }
+
+        function filterByDate(data, date) {
+            return data.filter(row => row['날짜'] === date);
+        }
+
+        function parseRank(rankStr) {
+            if (!rankStr) return 999;
+            // "1 (10:50 기준 작성)" 같은 형식 처리
+            const match = rankStr.toString().match(/^(\d+)/);
+            return match ? parseInt(match[1]) : 999;
+        }
+
+        function sortByRank(data) {
+            return [...data].sort((a, b) => parseRank(a['랭킹']) - parseRank(b['랭킹']));
+        }
+
+        function extractSteamUrl(gameNameCell) {
+            if (!gameNameCell) return '#';
+            // URL 형식 확인
+            const urlMatch = gameNameCell.match(/https:\/\/store\.steampowered\.com\/app\/\d+/);
+            if (urlMatch) {
+                return urlMatch[0];
+            }
+            return gameNameCell;
+        }
+
+        function extractGameName(url, developer) {
+            // URL에서 게임명을 추출하기 어려우므로 개발자명을 표시
+            // 또는 나중에 게임명 컬럼이 추가되면 사용
+            return developer || 'Unknown Game';
+        }
+
+        function extractTopTags(tagString, count = 3) {
+            if (!tagString) return [];
+            return tagString.split(',').slice(0, count).map(tag => tag.trim());
+        }
+
+        // ============================================
+        // UI Rendering
+        // ============================================
+        function populateDateSelector() {
+            const select = document.getElementById('dateSelect');
+            select.innerHTML = '';
+
+            appState.availableDates.forEach(date => {
+                const option = document.createElement('option');
+                option.value = date;
+                option.textContent = date;
+                if (date === appState.currentDate) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', (e) => {
+                appState.currentDate = e.target.value;
+                updateDashboard();
+            });
+        }
+
+        function renderAIInsights() {
+            const container = document.getElementById('aiInsightContent');
+            
+            // AI 인사이트 데이터가 있으면 사용, 없으면 기본 메시지
+            if (appState.data.aiInsights && appState.data.aiInsights.length > 0) {
+                const insight = appState.data.aiInsights.find(i => i['날짜'] === appState.currentDate) 
+                    || appState.data.aiInsights[0];
+                
+                container.innerHTML = `
+                    <p>${insight['summary'] || insight['요약'] || '인사이트 데이터를 불러오는 중입니다.'}</p>
+                    <ul class="insight-list">
+                        ${(insight['insights'] || insight['상세'] || '').split(';').map(item => 
+                            item.trim() ? `<li>${item.trim()}</li>` : ''
+                        ).join('')}
+                    </ul>
+                `;
+            } else {
+                // 데이터 기반 자동 생성 인사이트
+                const cat1Data = filterByDate(appState.data.category1, appState.currentDate);
+                const cat2Data = filterByDate(appState.data.category2, appState.currentDate);
+                const cat3Data = filterByDate(appState.data.category3, appState.currentDate);
+                
+                const top1Cat1 = cat1Data.find(d => parseRank(d['랭킹']) === 1);
+                const top1Cat2 = cat2Data.find(d => parseRank(d['랭킹']) === 1);
+                const top1Cat3 = cat3Data.find(d => parseRank(d['랭킹']) === 1);
+
+                container.innerHTML = `
+                    <p><span class="highlight">${appState.currentDate}</span> SNF 데일리 현황입니다.</p>
+                    <ul class="insight-list">
+                        <li><strong>떠오르는 출시 예정</strong> 1위: <span class="highlight">${top1Cat1?.['개발자'] || '-'}</span></li>
+                        <li><strong>인기 체험판</strong> 1위: <span class="highlight">${top1Cat2?.['개발자'] || '-'}</span></li>
+                        <li><strong>인기 출시 예정</strong> 1위: <span class="highlight">${top1Cat3?.['개발자'] || '-'}</span></li>
+                        <li>AI 인사이트 CSV 파일이 추가되면 더 상세한 분석이 표시됩니다.</li>
+                    </ul>
+                `;
+            }
+        }
+
+        function renderStats() {
+            // 참여 게임 수
+            const participantData = appState.data.participants.find(p => 
+                p['스팀 넥스트 페스트 구분']?.includes('2025년 6월')
+            );
+            document.getElementById('totalGames').textContent = 
+                participantData?.['숫자'] || '-';
+
+            // 라이브 방송 현황 (선택된 날짜의 1차 데이터)
+            const liveData = appState.data.liveStream.filter(l => 
+                l['날짜'] === appState.currentDate
+            );
+            
+            if (liveData.length > 0) {
+                const firstCheck = liveData[0];
+                document.getElementById('totalStreams').textContent = 
+                    firstCheck['방송 개수'] || '-';
+                document.getElementById('totalViewers').textContent = 
+                    firstCheck['총 시청자수'] || '-';
+            }
+
+            // 현재 일차 계산
+            const dayData = appState.data.liveStream.find(l => 
+                l['날짜'] === appState.currentDate
+            );
+            if (dayData) {
+                document.getElementById('currentDay').textContent = dayData['제목'] || '-';
+                document.getElementById('dayInfo').textContent = `${dayData['회차'] || ''}`;
+            }
+
+            // 마지막 업데이트 시간
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleString('ko-KR');
+        }
+
+        function renderRankingList(listId, data, limit) {
+            const container = document.getElementById(listId);
+            const sortedData = sortByRank(data).slice(0, limit);
+
+            if (sortedData.length === 0) {
+                container.innerHTML = '<li class="loading">데이터가 없습니다.</li>';
+                return;
+            }
+
+            container.innerHTML = sortedData.map((item, index) => {
+                const rank = parseRank(item['랭킹']);
+                const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-default';
+                const steamUrl = extractSteamUrl(item['게임명']);
+                const developer = item['개발자'] || 'Unknown';
+                const tags = extractTopTags(item['태그']);
+
+                return `
+                    <li class="ranking-item">
+                        <span class="rank-number ${rankClass}">${rank}</span>
+                        <div class="game-info">
+                            <a href="${steamUrl}" target="_blank" class="game-name" title="${developer}">${developer}</a>
+                            <div class="game-developer">${item['배급사'] || developer}</div>
+                            <div class="game-tags">
+                                ${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function renderAllRankings() {
+            const limit = appState.currentView === 'top10' ? 10 : 50;
+
+            renderRankingList('rankingList1', 
+                filterByDate(appState.data.category1, appState.currentDate), limit);
+            renderRankingList('rankingList2', 
+                filterByDate(appState.data.category2, appState.currentDate), limit);
+            renderRankingList('rankingList3', 
+                filterByDate(appState.data.category3, appState.currentDate), limit);
+        }
+
+        function renderLiveChart() {
+            const ctx = document.getElementById('liveChart').getContext('2d');
+            
+            // 기존 차트 제거
+            if (appState.chart) {
+                appState.chart.destroy();
+            }
+
+            // 일자별 데이터 집계 (1차 데이터만)
+            const dailyData = {};
+            appState.data.liveStream.forEach(item => {
+                if (item['회차'] === '1차') {
+                    dailyData[item['제목']] = {
+                        streams: parseInt(item['방송 개수']?.replace(/,/g, '') || 0),
+                        viewers: parseInt(item['총 시청자수']?.replace(/,/g, '') || 0)
+                    };
+                }
+            });
+
+            const labels = Object.keys(dailyData);
+            const streamsData = labels.map(l => dailyData[l].streams);
+            const viewersData = labels.map(l => dailyData[l].viewers);
+
+            appState.chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '방송 수',
+                            data: streamsData,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '시청자 수',
+                            data: viewersData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(45, 45, 58, 0.5)' }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            ticks: { color: '#8b5cf6' },
+                            grid: { color: 'rgba(45, 45, 58, 0.5)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            ticks: { color: '#10b981' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderLiveStats() {
+            const container = document.getElementById('liveStatsGrid');
+            
+            // 일자별 1차 데이터만 표시
+            const dailyStats = appState.data.liveStream.filter(l => l['회차'] === '1차');
+
+            container.innerHTML = dailyStats.map(stat => `
+                <div class="live-stat-card">
+                    <div class="live-stat-day">${stat['제목']}</div>
+                    <div class="live-stat-value">${stat['방송 개수']}</div>
+                    <div class="live-stat-label">방송</div>
+                    <div class="live-stat-value" style="font-size: 16px; margin-top: 8px;">${stat['총 시청자수']}</div>
+                    <div class="live-stat-label">시청자</div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // Modal Functions
+        // ============================================
+        function openModal(category) {
+            const modal = document.getElementById('modalOverlay');
+            const title = document.getElementById('modalTitle');
+            const list = document.getElementById('modalRankingList');
+
+            const titles = {
+                '1': '🔥 떠오르는 출시 예정 게임 TOP 50',
+                '2': '🎮 인기 체험판 TOP 50',
+                '3': '⭐ 인기 출시 예정 게임 TOP 50'
+            };
+
+            title.textContent = titles[category] || 'TOP 50 Rankings';
+
+            const dataKey = `category${category}`;
+            const data = filterByDate(appState.data[dataKey], appState.currentDate);
+            
+            renderRankingList('modalRankingList', data, 50);
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // ============================================
+        // Event Handlers
+        // ============================================
+        function setupEventListeners() {
+            // Tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    appState.currentView = e.target.dataset.view;
+                    renderAllRankings();
+                });
+            });
+
+            // View more buttons
+            document.querySelectorAll('.view-more-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    openModal(e.target.dataset.category);
+                });
+            });
+
+            // Modal close on overlay click
+            document.getElementById('modalOverlay').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    closeModal();
+                }
+            });
+
+            // ESC key to close modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        }
+
+        // ============================================
+        // Main Update Function
+        // ============================================
+        function updateDashboard() {
+            renderAIInsights();
+            renderStats();
+            renderAllRankings();
+        }
+
+        // ============================================
+        // Initialization
+        // ============================================
+        async function init() {
+            console.log('🎮 SNF Dashboard Initializing...');
+            
+            const loaded = await loadAllData();
+            
+            if (loaded) {
+                console.log('✅ Data loaded successfully');
+                console.log('Available dates:', appState.availableDates);
+                
+                populateDateSelector();
+                setupEventListeners();
+                updateDashboard();
+                renderLiveChart();
+                renderLiveStats();
+            } else {
+                console.error('❌ Failed to load data');
+                document.getElementById('aiInsightContent').innerHTML = `
+                    <p style="color: var(--danger);">
+                        데이터를 불러오는데 실패했습니다. CSV 파일 경로를 확인해주세요.
+                    </p>
+                `;
+            }
+        }
+
+        // Start the app
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
