@@ -536,14 +536,20 @@
            ============================================ */
         .content-grid {
             display: grid;
-            grid-template-columns: 1.8fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
             .content-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         /* ============================================
@@ -716,6 +722,7 @@
             display: flex;
             gap: 4px;
             margin-top: 4px;
+            flex-wrap: wrap;
         }
 
         .tag {
@@ -727,7 +734,7 @@
         }
 
         /* ============================================
-           Activities
+           Activities (Compact List)
            ============================================ */
         .activities-container {
             background: var(--card-bg);
@@ -737,24 +744,28 @@
         }
 
         .activities-header {
-            padding: 14px 16px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .activities-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
         }
 
         .activities-list {
-            max-height: 480px;
+            max-height: 320px;
             overflow-y: auto;
         }
 
         .activity-item {
             display: flex;
-            gap: 10px;
-            padding: 12px 16px;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
             border-bottom: 1px solid var(--border-color);
             transition: background 0.2s;
             cursor: pointer;
@@ -769,59 +780,117 @@
             border-bottom: none;
         }
 
-        .activity-thumb {
-            width: 72px;
-            height: 40px;
-            background: var(--secondary-bg);
-            border-radius: 4px;
+        .activity-category {
             flex-shrink: 0;
-            overflow: hidden;
-        }
-
-        .activity-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .activity-thumb-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 9px;
-            color: var(--text-muted);
-        }
-
-        .activity-content {
-            flex: 1;
-            min-width: 0;
+            color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
         }
 
         .activity-title {
+            flex: 1;
             font-size: 12px;
             font-weight: 500;
             color: var(--text-primary);
-            margin-bottom: 2px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
             line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .activity-meta {
-            font-size: 10px;
+        .activity-item.empty {
+            justify-content: center;
             color: var(--text-muted);
         }
 
         /* ============================================
-           Live Section
+           Broadcast Card (방송 현황)
            ============================================ */
-        .live-section {
+        .broadcast-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .broadcast-header {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .broadcast-title {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .broadcast-badge {
+            font-size: 9px;
+            color: var(--accent-purple-light);
+            background: rgba(139, 92, 246, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .broadcast-content {
+            padding: 14px;
+        }
+
+        .broadcast-main-stat {
+            text-align: center;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .broadcast-main-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .broadcast-main-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-purple-light);
+        }
+
+        .broadcast-main-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .broadcast-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .broadcast-stat-item {
+            padding: 10px;
+            background: var(--secondary-bg);
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .broadcast-stat-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .broadcast-stat-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
             border-radius: 10px;
             padding: 16px;
             margin-top: 16px;
@@ -1174,7 +1243,7 @@
 
                     <!-- Content Grid -->
                     <div class="content-grid">
-                        <!-- Rankings -->
+                        <!-- Rankings (Left) -->
                         <div class="rankings-container">
                             <div class="rankings-header">
                                 <h3 class="rankings-title">Daily Rankings</h3>
@@ -1198,64 +1267,49 @@
                             </div>
                         </div>
 
-                        <!-- Activities -->
-                        <div class="activities-container">
-                            <div class="activities-header">
-                                <h3 class="activities-title">Activities</h3>
-                            </div>
-                            <div class="activities-list" id="activitiesList">
-                                <div class="activity-item">
-                                    <div class="activity-thumb">
-                                        <div class="activity-thumb-placeholder">IMG</div>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">뉴스 기사 데이터가 연동되면 표시됩니다</div>
-                                        <div class="activity-meta">news_articles.csv 필요</div>
-                                    </div>
+                        <!-- Right Column: Activities + Broadcast -->
+                        <div class="right-column">
+                            <!-- Activities -->
+                            <div class="activities-container">
+                                <div class="activities-header">
+                                    <h3 class="activities-title">Today's News</h3>
                                 </div>
-                                <div class="activity-item">
-                                    <div class="activity-thumb">
-                                        <div class="activity-thumb-placeholder">IMG</div>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">SNF 참여 게임 관련 보도자료</div>
-                                        <div class="activity-meta">Coming soon</div>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-thumb">
-                                        <div class="activity-thumb-placeholder">IMG</div>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">썸네일과 기사 제목 표시 영역</div>
-                                        <div class="activity-meta">Coming soon</div>
-                                    </div>
+                                <div class="activities-list" id="activitiesList">
+                                    <!-- 동적 생성 -->
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Live Section (2 columns) -->
-                    <div class="live-section-grid">
-                        <div class="live-chart-card">
-                            <div class="live-header">
-                                <h3 class="live-title">당일 방송 현황</h3>
-                                <span class="live-badge" id="liveDayBadge">Day 1</span>
-                            </div>
-                            <div class="live-daily-stats" id="liveDailyStats">
-                                <!-- 당일 측정 회차별 데이터 -->
-                            </div>
-                        </div>
-                        <div class="live-summary-card">
-                            <div class="live-header">
-                                <h3 class="live-title">7일 누적 요약</h3>
-                            </div>
-                            <div class="live-summary-content" id="liveSummaryContent">
-                                <!-- 7일 요약 통계 -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            <!-- Broadcast Card -->
+                            <div class="broadcast-card">
+                                <div class="broadcast-header">
+                                    <h3 class="broadcast-title">라이브 방송</h3>
+                                    <span class="broadcast-badge" id="broadcastDayBadge">Day 1</span>
+                                </div>
+                                <div class="broadcast-content">
+                                    <div class="broadcast-main-stat">
+                                        <div class="broadcast-main-label">총 시청자 수</div>
+                                        <div class="broadcast-main-value" id="broadcastViewers">-</div>
+                                        <div class="broadcast-main-sub" id="broadcastViewersSub">1차 측정 기준</div>
+                                    </div>
+                                    <div class="broadcast-stats">
+                                        <div class="broadcast-stat-item">
+                                            <div class="broadcast-stat-label">진행 방송</div>
+                                            <div class="broadcast-stat-value" id="broadcastCount">-</div>
+                                        </div>
+                                        <div class="broadcast-stat-item">
+                                            <div class="broadcast-stat-label">측정 회차</div>
+                                            <div class="broadcast-stat-value" id="broadcastRound">-</div>
+                                        </div>
+                                        <div class="broadcast-stat-item">
+                                            <div class="broadcast-stat-label">7일 최고</div>
+                                            <div class="broadcast-stat-value" id="broadcastPeak">-</div>
+                                        </div>
+                                        <div class="broadcast-stat-item">
+                                            <div class="broadcast-stat-label">7일 평균</div>
+                                            <div class="broadcast-stat-value" id="broadcastAvg">-</div>
+                                        </div>
+                                    </div>
+                                </div>
 
                 <!-- Summary Page -->
                 <div class="page-section" id="page-summary">
@@ -1665,24 +1719,94 @@
             const container = document.getElementById('activitiesList');
             
             if (state.data.newsArticles && state.data.newsArticles.length > 0) {
-                const filteredArticles = state.data.newsArticles.filter(a => 
-                    a['날짜'] === state.currentDate || !a['날짜']
-                );
-                const articlesToShow = filteredArticles.length > 0 ? filteredArticles : state.data.newsArticles;
+                // 현재 Day에 맞는 날짜 필터링
+                const dayDates = {
+                    1: '2025-06-10', 2: '2025-06-11', 3: '2025-06-12',
+                    4: '2025-06-13', 5: '2025-06-14', 6: '2025-06-15', 7: '2025-06-16'
+                };
+                const targetDate = dayDates[state.currentDay];
                 
-                container.innerHTML = articlesToShow.slice(0, 5).map(article => `
-                    <a href="${article['링크'] || article['url'] || '#'}" target="_blank" class="activity-item">
-                        <div class="activity-thumb">
-                            ${article['thumbnail'] 
-                                ? `<img src="${article['thumbnail']}" alt="">` 
-                                : '<div class="activity-thumb-placeholder">IMG</div>'}
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">${article['title'] || article['제목'] || ''}</div>
-                            <div class="activity-meta">${article['date'] || article['날짜'] || ''}</div>
-                        </div>
+                const filteredArticles = state.data.newsArticles.filter(a => {
+                    const articleDate = a['날짜'] || '';
+                    return articleDate === targetDate;
+                });
+                
+                const articlesToShow = filteredArticles.length > 0 ? filteredArticles : state.data.newsArticles.slice(0, 5);
+                
+                container.innerHTML = articlesToShow.slice(0, 6).map(article => `
+                    <a href="${article['링크'] || '#'}" target="_blank" class="activity-item">
+                        <span class="activity-category">${article['카테고리'] || '뉴스'}</span>
+                        <span class="activity-title">${article['제목'] || ''}</span>
                     </a>
                 `).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="activity-item empty">
+                        <span class="activity-title">데이터를 불러오는 중...</span>
+                    </div>
+                `;
+            }
+        }
+
+        function renderBroadcast() {
+            const dayBadge = document.getElementById('broadcastDayBadge');
+            const viewersEl = document.getElementById('broadcastViewers');
+            const viewersSubEl = document.getElementById('broadcastViewersSub');
+            const countEl = document.getElementById('broadcastCount');
+            const roundEl = document.getElementById('broadcastRound');
+            const peakEl = document.getElementById('broadcastPeak');
+            const avgEl = document.getElementById('broadcastAvg');
+            
+            if (dayBadge) dayBadge.textContent = `Day ${state.currentDay}`;
+            
+            const liveData = state.data.liveStream;
+            if (!liveData || liveData.length === 0) {
+                viewersEl.textContent = '-';
+                viewersSubEl.textContent = '데이터 없음';
+                countEl.textContent = '-';
+                roundEl.textContent = '-';
+                peakEl.textContent = '-';
+                avgEl.textContent = '-';
+                return;
+            }
+            
+            // 현재 Day 데이터 필터링
+            const dayData = liveData.filter(row => {
+                const day = parseInt(row['Day'] || row['day'] || row['일차']);
+                return day === state.currentDay;
+            });
+            
+            if (dayData.length > 0) {
+                // 가장 최근 측정 회차의 시청자 수
+                const latestData = dayData[dayData.length - 1];
+                const viewers = parseInt(latestData['시청자수'] || latestData['viewers'] || latestData['총시청자'] || 0);
+                const count = parseInt(latestData['방송수'] || latestData['count'] || latestData['진행방송'] || 0);
+                const round = latestData['회차'] || latestData['round'] || dayData.length;
+                
+                viewersEl.textContent = viewers.toLocaleString();
+                viewersSubEl.textContent = `${round}차 측정 기준`;
+                countEl.textContent = count.toLocaleString();
+                roundEl.textContent = `${dayData.length}회`;
+            } else {
+                viewersEl.textContent = '-';
+                viewersSubEl.textContent = '측정 전';
+                countEl.textContent = '-';
+                roundEl.textContent = '-';
+            }
+            
+            // 7일 전체 통계 계산
+            const allViewers = liveData.map(row => 
+                parseInt(row['시청자수'] || row['viewers'] || row['총시청자'] || 0)
+            ).filter(v => v > 0);
+            
+            if (allViewers.length > 0) {
+                const peak = Math.max(...allViewers);
+                const avg = Math.round(allViewers.reduce((a, b) => a + b, 0) / allViewers.length);
+                peakEl.textContent = peak.toLocaleString();
+                avgEl.textContent = avg.toLocaleString();
+            } else {
+                peakEl.textContent = '-';
+                avgEl.textContent = '-';
             }
         }
 
@@ -1753,7 +1877,8 @@
             renderInsightCards();
             renderStats();
             renderRankings();
-            renderLiveSection();
+            renderActivities();
+            renderBroadcast();
         }
 
         // ============================================
