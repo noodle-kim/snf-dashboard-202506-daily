@@ -655,6 +655,7 @@
             padding: 10px 16px;
             border-bottom: 1px solid var(--border-color);
             transition: background 0.2s;
+            gap: 12px;
         }
 
         .ranking-item:hover {
@@ -674,7 +675,6 @@
             justify-content: center;
             font-weight: 700;
             font-size: 11px;
-            margin-right: 12px;
             flex-shrink: 0;
             background: var(--secondary-bg);
             color: var(--text-muted);
@@ -722,8 +722,10 @@
         .game-tags {
             display: flex;
             gap: 4px;
-            margin-top: 4px;
             flex-wrap: wrap;
+            flex-shrink: 0;
+            max-width: 180px;
+            justify-content: flex-end;
         }
 
         .tag {
@@ -732,6 +734,7 @@
             background: var(--secondary-bg);
             color: var(--text-muted);
             border-radius: 3px;
+            white-space: nowrap;
         }
 
         /* ============================================
@@ -839,31 +842,38 @@
         }
 
         .broadcast-content {
-            padding: 14px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .broadcast-summary {
+            flex-shrink: 0;
+            width: 140px;
         }
 
         .broadcast-main-stat {
             text-align: center;
-            padding: 16px;
+            padding: 12px 8px;
             background: var(--secondary-bg);
             border-radius: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .broadcast-main-label {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .broadcast-main-value {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--accent-purple-light);
         }
 
         .broadcast-main-sub {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-muted);
             margin-top: 2px;
         }
@@ -871,26 +881,98 @@
         .broadcast-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 4px;
         }
 
         .broadcast-stat-item {
-            padding: 10px;
+            padding: 6px 4px;
             background: var(--secondary-bg);
-            border-radius: 6px;
+            border-radius: 4px;
             text-align: center;
         }
 
         .broadcast-stat-label {
-            font-size: 9px;
+            font-size: 8px;
             color: var(--text-muted);
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         .broadcast-stat-value {
-            font-size: 14px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-primary);
+        }
+
+        .broadcast-top5 {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .broadcast-top5-title {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .broadcast-top5-list {
+            list-style: none;
+        }
+
+        .broadcast-top5-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .broadcast-top5-item:last-child {
+            border-bottom: none;
+        }
+
+        .broadcast-top5-rank {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            background: var(--secondary-bg);
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .broadcast-top5-rank.r1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
+        .broadcast-top5-rank.r2 { background: linear-gradient(135deg, #d1d5db, #9ca3af); color: #000; }
+        .broadcast-top5-rank.r3 { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; }
+
+        .broadcast-top5-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .broadcast-top5-name {
+            font-size: 11px;
+            color: var(--text-primary);
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .broadcast-top5-name:hover {
+            color: var(--accent-purple-light);
+        }
+
+        .broadcast-top5-viewers {
+            font-size: 10px;
+            color: var(--accent-purple-light);
+            font-weight: 600;
+            flex-shrink: 0;
         }
 
         .live-container {
@@ -1291,30 +1373,34 @@
                                     <span class="broadcast-badge" id="broadcastDayBadge">Day 1</span>
                                 </div>
                                 <div class="broadcast-content">
-                                    <div class="broadcast-main-stat">
-                                        <div class="broadcast-main-label">총 시청자 수</div>
-                                        <div class="broadcast-main-value" id="broadcastViewers">-</div>
-                                        <div class="broadcast-main-sub" id="broadcastViewersSub">1차 측정 기준</div>
+                                    <div class="broadcast-summary">
+                                        <div class="broadcast-main-stat">
+                                            <div class="broadcast-main-label">총 시청자</div>
+                                            <div class="broadcast-main-value" id="broadcastViewers">-</div>
+                                            <div class="broadcast-main-sub" id="broadcastViewersSub">1차 기준</div>
+                                        </div>
+                                        <div class="broadcast-stats">
+                                            <div class="broadcast-stat-item">
+                                                <div class="broadcast-stat-label">방송</div>
+                                                <div class="broadcast-stat-value" id="broadcastCount">-</div>
+                                            </div>
+                                            <div class="broadcast-stat-item">
+                                                <div class="broadcast-stat-label">회차</div>
+                                                <div class="broadcast-stat-value" id="broadcastRound">-</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="broadcast-stats">
-                                        <div class="broadcast-stat-item">
-                                            <div class="broadcast-stat-label">진행 방송</div>
-                                            <div class="broadcast-stat-value" id="broadcastCount">-</div>
-                                        </div>
-                                        <div class="broadcast-stat-item">
-                                            <div class="broadcast-stat-label">측정 회차</div>
-                                            <div class="broadcast-stat-value" id="broadcastRound">-</div>
-                                        </div>
-                                        <div class="broadcast-stat-item">
-                                            <div class="broadcast-stat-label">7일 최고</div>
-                                            <div class="broadcast-stat-value" id="broadcastPeak">-</div>
-                                        </div>
-                                        <div class="broadcast-stat-item">
-                                            <div class="broadcast-stat-label">7일 평균</div>
-                                            <div class="broadcast-stat-value" id="broadcastAvg">-</div>
-                                        </div>
+                                    <div class="broadcast-top5">
+                                        <div class="broadcast-top5-title">TOP 5 시청자 게임</div>
+                                        <ul class="broadcast-top5-list" id="broadcastTop5List">
+                                            <!-- 동적 생성 -->
+                                        </ul>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Summary Page -->
                 <div class="page-section" id="page-summary">
@@ -1372,6 +1458,7 @@
                 category3: GITHUB_BASE + encodeURIComponent('3_인기 출시 예정 게임.csv'),
                 participants: GITHUB_BASE + encodeURIComponent('SNF 참여 게임 숫자.csv'),
                 liveStream: GITHUB_BASE + encodeURIComponent('라이브 방송 현황.csv'),
+                broadcastTop5: GITHUB_BASE + encodeURIComponent('라이브 방송 TOP5.csv'),
                 aiInsights: GITHUB_BASE + 'ai_insights.csv',
                 aiDailyCards: GITHUB_BASE + 'ai_daily_cards.csv',
                 newsArticles: GITHUB_BASE + 'news_articles.csv'
@@ -1392,6 +1479,7 @@
                 category3: [],
                 participants: [],
                 liveStream: [],
+                broadcastTop5: [],
                 aiInsights: [],
                 aiDailyCards: [],
                 newsArticles: []
@@ -1438,6 +1526,7 @@
             try { state.data.aiInsights = await loadCSV(CONFIG.csvPaths.aiInsights); } catch (e) {}
             try { state.data.aiDailyCards = await loadCSV(CONFIG.csvPaths.aiDailyCards); } catch (e) {}
             try { state.data.newsArticles = await loadCSV(CONFIG.csvPaths.newsArticles); } catch (e) {}
+            try { state.data.broadcastTop5 = await loadCSV(CONFIG.csvPaths.broadcastTop5); } catch (e) {}
 
             extractDatesAndDays();
         }
@@ -1721,9 +1810,9 @@
                         <div class="game-info">
                             <a href="${steamUrl}" target="_blank" class="game-name">${developer}</a>
                             <div class="game-meta">${publisher}</div>
-                            <div class="game-tags">
-                                ${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            </div>
+                        </div>
+                        <div class="game-tags">
+                            ${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                     </li>
                 `;
@@ -1769,8 +1858,7 @@
             const viewersSubEl = document.getElementById('broadcastViewersSub');
             const countEl = document.getElementById('broadcastCount');
             const roundEl = document.getElementById('broadcastRound');
-            const peakEl = document.getElementById('broadcastPeak');
-            const avgEl = document.getElementById('broadcastAvg');
+            const top5List = document.getElementById('broadcastTop5List');
             
             if (dayBadge) dayBadge.textContent = `Day ${state.currentDay}`;
             
@@ -1780,8 +1868,6 @@
                 if (viewersSubEl) viewersSubEl.textContent = '데이터 없음';
                 if (countEl) countEl.textContent = '-';
                 if (roundEl) roundEl.textContent = '-';
-                if (peakEl) peakEl.textContent = '-';
-                if (avgEl) avgEl.textContent = '-';
                 return;
             }
             
@@ -1801,7 +1887,7 @@
                 const count = parseInt(countStr) || 0;
                 
                 if (viewersEl) viewersEl.textContent = viewers.toLocaleString();
-                if (viewersSubEl) viewersSubEl.textContent = '1차 측정 기준';
+                if (viewersSubEl) viewersSubEl.textContent = '1차 기준';
                 if (countEl) countEl.textContent = count.toLocaleString();
                 if (roundEl) roundEl.textContent = `${dayData.length}회`;
             } else {
@@ -1811,21 +1897,34 @@
                 if (roundEl) roundEl.textContent = '-';
             }
             
-            // 7일 전체 통계 계산 (1차 측정 기준)
-            const firstRoundData = liveData.filter(row => row['회차'] === '1차');
-            const allViewers = firstRoundData.map(row => {
-                const viewersStr = (row['총 시청자수'] || '0').replace(/,/g, '');
-                return parseInt(viewersStr) || 0;
-            }).filter(v => v > 0);
-            
-            if (allViewers.length > 0) {
-                const peak = Math.max(...allViewers);
-                const avg = Math.round(allViewers.reduce((a, b) => a + b, 0) / allViewers.length);
-                if (peakEl) peakEl.textContent = peak.toLocaleString();
-                if (avgEl) avgEl.textContent = avg.toLocaleString();
-            } else {
-                if (peakEl) peakEl.textContent = '-';
-                if (avgEl) avgEl.textContent = '-';
+            // TOP 5 방송 게임 렌더링
+            const top5Data = state.data.broadcastTop5;
+            if (top5Data && top5Data.length > 0 && top5List) {
+                const dayTop5 = top5Data.filter(row => parseInt(row['일차']) === state.currentDay);
+                
+                if (dayTop5.length > 0) {
+                    top5List.innerHTML = dayTop5.sort((a, b) => parseInt(a['순위']) - parseInt(b['순위'])).map(item => {
+                        const rank = parseInt(item['순위']);
+                        let rankClass = '';
+                        if (rank === 1) rankClass = 'r1';
+                        else if (rank === 2) rankClass = 'r2';
+                        else if (rank === 3) rankClass = 'r3';
+                        
+                        const viewers = parseInt(item['시청자수'] || 0);
+                        
+                        return `
+                            <li class="broadcast-top5-item">
+                                <span class="broadcast-top5-rank ${rankClass}">${rank}</span>
+                                <div class="broadcast-top5-info">
+                                    <a href="${item['스팀URL'] || '#'}" target="_blank" class="broadcast-top5-name">${item['게임명'] || ''}</a>
+                                </div>
+                                <span class="broadcast-top5-viewers">${viewers.toLocaleString()}</span>
+                            </li>
+                        `;
+                    }).join('');
+                } else {
+                    top5List.innerHTML = '<li class="broadcast-top5-item"><span style="color: var(--text-muted); font-size: 11px;">데이터 없음</span></li>';
+                }
             }
         }
 
