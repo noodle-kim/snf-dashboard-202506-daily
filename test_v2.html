@@ -421,15 +421,15 @@
         }
 
         .insight-card-title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--accent-purple-light);
             margin-bottom: 10px;
         }
 
         .insight-card-content {
-            color: var(--text-secondary);
-            font-size: 12px;
+            color: var(--text-primary);
+            font-size: 13px;
             line-height: 1.7;
         }
 
@@ -453,7 +453,8 @@
             padding-left: 14px;
             position: relative;
             border-bottom: 1px solid var(--border-color);
-            font-size: 13px;
+            font-size: 14px;
+            color: var(--text-primary);
         }
 
         .insight-list li:last-child {
@@ -516,8 +517,8 @@
         }
 
         .stat-desc {
-            font-size: 10px;
-            color: var(--text-muted);
+            font-size: 11px;
+            color: var(--text-secondary);
             margin-top: 6px;
             line-height: 1.4;
         }
@@ -793,8 +794,8 @@
         .activity-title {
             flex: 1;
             font-size: 12px;
-            font-weight: 500;
-            color: var(--text-primary);
+            font-weight: 400;
+            color: var(--text-secondary);
             line-height: 1.4;
             white-space: nowrap;
             overflow: hidden;
@@ -891,6 +892,10 @@
             font-weight: 600;
             color: var(--text-primary);
         }
+
+        .live-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 10px;
             padding: 16px;
             margin-top: 16px;
@@ -1194,7 +1199,7 @@
                     </div>
                 </div>
 
-                <div class="header-right">
+                <div class="header-right" style="display: none;">
                     <span class="header-date" id="selectedDateText">2025년 06월 10일</span>
                 </div>
             </header>
@@ -1460,7 +1465,8 @@
             });
 
             if (state.availableDates.length > 0) {
-                state.currentDate = state.availableDates[state.availableDates.length - 1];
+                state.currentDate = state.availableDates[0]; // Day 1 기본 선택
+                state.currentDay = 1;
             }
         }
 
@@ -1500,13 +1506,15 @@
             const maxDays = Math.min(state.availableDates.length, 7);
             
             container.innerHTML = state.availableDates.slice(0, maxDays).map((date, index) => {
+                const dayNum = index + 1;
                 const isActive = date === state.currentDate ? 'active' : '';
-                return `<button class="day-btn ${isActive}" data-date="${date}">Day ${index + 1}</button>`;
+                return `<button class="day-btn ${isActive}" data-date="${date}" data-day="${dayNum}">Day ${dayNum}</button>`;
             }).join('');
 
             container.querySelectorAll('.day-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     state.currentDate = btn.dataset.date;
+                    state.currentDay = parseInt(btn.dataset.day);
                     updateDashboard();
                 });
             });
@@ -1519,12 +1527,11 @@
 
         function renderDayBadge() {
             const badge = document.getElementById('dayBadge');
-            const dayNum = state.availableDates.indexOf(state.currentDate) + 1;
-            badge.textContent = `Day ${dayNum}`;
+            badge.textContent = `Day ${state.currentDay}`;
             
             // 라이브 섹션 Day Badge
             const liveBadge = document.getElementById('liveDayBadge');
-            if (liveBadge) liveBadge.textContent = `Day ${dayNum}`;
+            if (liveBadge) liveBadge.textContent = `Day ${state.currentDay}`;
         }
 
         function renderInsightCards() {
@@ -1606,18 +1613,26 @@
             );
             document.getElementById('totalGames').textContent = participantData?.['숫자'] || '-';
 
-            const liveData = state.data.liveStream.filter(l => l['날짜'] === state.currentDate);
+            // 현재 Day에 해당하는 라이브 데이터 필터링 (제목 열: "1일차", "2일차" 등)
+            const dayLabel = `${state.currentDay}일차`;
+            const dayLiveData = state.data.liveStream.filter(l => l['제목'] === dayLabel);
             
-            if (liveData.length > 0) {
-                document.getElementById('totalStreams').textContent = liveData[0]['방송 개수'] || '-';
-                document.getElementById('totalViewers').textContent = liveData[0]['총 시청자수'] || '-';
-                document.getElementById('streamsDesc').textContent = `${state.currentDate} 진행된 SNF 방송 수`;
-                document.getElementById('viewersDesc').textContent = `${liveData[0]['회차'] || '1차'} 측정 기준 누적 시청자`;
+            if (dayLiveData.length > 0) {
+                // 1차 측정 데이터 우선, 없으면 첫번째 데이터
+                const firstData = dayLiveData.find(d => d['회차'] === '1차') || dayLiveData[0];
+                document.getElementById('totalStreams').textContent = firstData['방송 개수'] || '-';
+                document.getElementById('totalViewers').textContent = firstData['총 시청자수'] || '-';
+                document.getElementById('streamsDesc').textContent = `Day ${state.currentDay} 진행된 SNF 방송 수`;
+                document.getElementById('viewersDesc').textContent = `${firstData['회차'] || '1차'} 측정 기준 누적 시청자`;
+            } else {
+                document.getElementById('totalStreams').textContent = '-';
+                document.getElementById('totalViewers').textContent = '-';
+                document.getElementById('streamsDesc').textContent = `Day ${state.currentDay} 데이터 없음`;
+                document.getElementById('viewersDesc').textContent = '측정 전';
             }
 
-            const dayNum = state.availableDates.indexOf(state.currentDate) + 1;
-            document.getElementById('currentDay').textContent = `Day ${dayNum}`;
-            document.getElementById('dayDesc').textContent = `SNF 7일 이벤트 중 ${dayNum}일차`;
+            document.getElementById('currentDay').textContent = `Day ${state.currentDay}`;
+            document.getElementById('dayDesc').textContent = `SNF 7일 이벤트 중 ${state.currentDay}일차`;
         }
 
         function renderLiveSection() {
@@ -1761,52 +1776,56 @@
             
             const liveData = state.data.liveStream;
             if (!liveData || liveData.length === 0) {
-                viewersEl.textContent = '-';
-                viewersSubEl.textContent = '데이터 없음';
-                countEl.textContent = '-';
-                roundEl.textContent = '-';
-                peakEl.textContent = '-';
-                avgEl.textContent = '-';
+                if (viewersEl) viewersEl.textContent = '-';
+                if (viewersSubEl) viewersSubEl.textContent = '데이터 없음';
+                if (countEl) countEl.textContent = '-';
+                if (roundEl) roundEl.textContent = '-';
+                if (peakEl) peakEl.textContent = '-';
+                if (avgEl) avgEl.textContent = '-';
                 return;
             }
             
-            // 현재 Day 데이터 필터링
+            // 현재 Day 데이터 필터링 - CSV의 '제목' 열에서 "1일차", "2일차" 등으로 필터
+            const dayLabel = `${state.currentDay}일차`;
             const dayData = liveData.filter(row => {
-                const day = parseInt(row['Day'] || row['day'] || row['일차']);
-                return day === state.currentDay;
+                const title = row['제목'] || '';
+                return title === dayLabel;
             });
             
             if (dayData.length > 0) {
-                // 가장 최근 측정 회차의 시청자 수
-                const latestData = dayData[dayData.length - 1];
-                const viewers = parseInt(latestData['시청자수'] || latestData['viewers'] || latestData['총시청자'] || 0);
-                const count = parseInt(latestData['방송수'] || latestData['count'] || latestData['진행방송'] || 0);
-                const round = latestData['회차'] || latestData['round'] || dayData.length;
+                // 1차 측정 데이터 찾기
+                const firstRoundData = dayData.find(d => d['회차'] === '1차') || dayData[0];
+                const viewersStr = (firstRoundData['총 시청자수'] || '0').replace(/,/g, '');
+                const viewers = parseInt(viewersStr) || 0;
+                const countStr = (firstRoundData['방송 개수'] || '0').replace(/,/g, '');
+                const count = parseInt(countStr) || 0;
                 
-                viewersEl.textContent = viewers.toLocaleString();
-                viewersSubEl.textContent = `${round}차 측정 기준`;
-                countEl.textContent = count.toLocaleString();
-                roundEl.textContent = `${dayData.length}회`;
+                if (viewersEl) viewersEl.textContent = viewers.toLocaleString();
+                if (viewersSubEl) viewersSubEl.textContent = '1차 측정 기준';
+                if (countEl) countEl.textContent = count.toLocaleString();
+                if (roundEl) roundEl.textContent = `${dayData.length}회`;
             } else {
-                viewersEl.textContent = '-';
-                viewersSubEl.textContent = '측정 전';
-                countEl.textContent = '-';
-                roundEl.textContent = '-';
+                if (viewersEl) viewersEl.textContent = '-';
+                if (viewersSubEl) viewersSubEl.textContent = '측정 전';
+                if (countEl) countEl.textContent = '-';
+                if (roundEl) roundEl.textContent = '-';
             }
             
-            // 7일 전체 통계 계산
-            const allViewers = liveData.map(row => 
-                parseInt(row['시청자수'] || row['viewers'] || row['총시청자'] || 0)
-            ).filter(v => v > 0);
+            // 7일 전체 통계 계산 (1차 측정 기준)
+            const firstRoundData = liveData.filter(row => row['회차'] === '1차');
+            const allViewers = firstRoundData.map(row => {
+                const viewersStr = (row['총 시청자수'] || '0').replace(/,/g, '');
+                return parseInt(viewersStr) || 0;
+            }).filter(v => v > 0);
             
             if (allViewers.length > 0) {
                 const peak = Math.max(...allViewers);
                 const avg = Math.round(allViewers.reduce((a, b) => a + b, 0) / allViewers.length);
-                peakEl.textContent = peak.toLocaleString();
-                avgEl.textContent = avg.toLocaleString();
+                if (peakEl) peakEl.textContent = peak.toLocaleString();
+                if (avgEl) avgEl.textContent = avg.toLocaleString();
             } else {
-                peakEl.textContent = '-';
-                avgEl.textContent = '-';
+                if (peakEl) peakEl.textContent = '-';
+                if (avgEl) avgEl.textContent = '-';
             }
         }
 
