@@ -351,14 +351,61 @@
         }
 
         /* ============================================
-           Insight Card
+           Header Date Display
            ============================================ */
+        .header-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--card-bg);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ============================================
+           Insight Section (3 Column Cards)
+           ============================================ */
+        .insight-section {
+            margin-bottom: 16px;
+        }
+
+        .insight-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .insight-section-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .insight-badge {
+            font-size: 10px;
+            color: var(--accent-purple-light);
+            background: rgba(139, 92, 246, 0.15);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .insight-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 1100px) {
+            .insight-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .insight-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 16px;
+            padding: 16px;
             position: relative;
             overflow: hidden;
         }
@@ -373,30 +420,27 @@
             background: var(--accent-gradient);
         }
 
-        .insight-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .insight-title {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .insight-badge {
-            font-size: 10px;
-            color: var(--accent-purple-light);
-            background: rgba(139, 92, 246, 0.15);
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
-        .insight-content {
-            color: var(--text-secondary);
+        .insight-card-title {
             font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-purple-light);
+            margin-bottom: 10px;
+        }
+
+        .insight-card-content {
+            color: var(--text-secondary);
+            font-size: 12px;
             line-height: 1.7;
+        }
+
+        .insight-card-content li {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border-color);
+            list-style: none;
+        }
+
+        .insight-card-content li:last-child {
+            border-bottom: none;
         }
 
         .insight-list {
@@ -469,6 +513,13 @@
             font-size: 24px;
             font-weight: 700;
             color: var(--text-primary);
+        }
+
+        .stat-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            line-height: 1.4;
         }
 
         .stat-change {
@@ -777,12 +828,107 @@
         }
 
         .live-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 12px;
         }
 
         .live-title {
             font-size: 14px;
             font-weight: 600;
+        }
+
+        .live-badge {
+            font-size: 10px;
+            color: var(--accent-purple-light);
+            background: rgba(139, 92, 246, 0.15);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        /* Live Section Grid (2 columns) */
+        .live-section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 1100px) {
+            .live-section-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .live-chart-card,
+        .live-summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .live-daily-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .live-daily-item {
+            text-align: center;
+            padding: 14px 10px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+        }
+
+        .live-daily-label {
+            font-size: 10px;
+            color: var(--accent-purple-light);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .live-daily-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .live-daily-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .live-summary-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .live-summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--secondary-bg);
+            border-radius: 6px;
+        }
+
+        .live-summary-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .live-summary-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .live-summary-value.highlight {
+            color: var(--accent-purple-light);
         }
 
         .chart-container {
@@ -980,15 +1126,7 @@
                 </div>
 
                 <div class="header-right">
-                    <div class="dropdown">
-                        <button class="dropdown-btn" id="dateDropdownBtn">
-                            <span id="selectedDateText">날짜 선택</span>
-                            <span class="dropdown-arrow">▼</span>
-                        </button>
-                        <div class="dropdown-menu" id="dateDropdownMenu">
-                            <!-- 동적 생성 -->
-                        </div>
-                    </div>
+                    <span class="header-date" id="selectedDateText">2025년 06월 10일</span>
                 </div>
             </header>
 
@@ -996,13 +1134,13 @@
             <div class="content-area">
                 <!-- Daily Report Page -->
                 <div class="page-section active" id="page-daily">
-                    <!-- AI Insight -->
-                    <div class="insight-card">
-                        <div class="insight-header">
-                            <h2 class="insight-title">AI Daily Insight</h2>
+                    <!-- AI Insight Cards (3 columns) -->
+                    <div class="insight-section">
+                        <div class="insight-section-header">
+                            <h2 class="insight-section-title">AI Daily Insight</h2>
                             <span class="insight-badge" id="insightDate">2025년 6월 10일</span>
                         </div>
-                        <div class="insight-content" id="aiInsightContent">
+                        <div class="insight-cards-grid" id="insightCardsGrid">
                             <div class="loading">
                                 <div class="loading-spinner"></div>
                                 인사이트 로딩 중...
@@ -1013,24 +1151,24 @@
                     <!-- Stats Grid -->
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-label">참여 게임</div>
+                            <div class="stat-label">SNF 참여 게임</div>
                             <div class="stat-value" id="totalGames">-</div>
-                            <div class="stat-change" id="gamesChange"></div>
+                            <div class="stat-desc">2025년 6월 SNF 전체 등록 게임 수</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label">라이브 방송</div>
+                            <div class="stat-label">당일 라이브 방송</div>
                             <div class="stat-value" id="totalStreams">-</div>
-                            <div class="stat-change" id="streamsChange"></div>
+                            <div class="stat-desc" id="streamsDesc">해당 일자 진행된 SNF 방송 수</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label">총 시청자</div>
+                            <div class="stat-label">당일 총 시청자</div>
                             <div class="stat-value" id="totalViewers">-</div>
-                            <div class="stat-change" id="viewersChange"></div>
+                            <div class="stat-desc" id="viewersDesc">1차 측정 기준 누적 시청자</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label">진행 일차</div>
+                            <div class="stat-label">이벤트 진행</div>
                             <div class="stat-value" id="currentDay">-</div>
-                            <div class="stat-change" id="dayInfo"></div>
+                            <div class="stat-desc" id="dayDesc">SNF 7일 이벤트 진행 현황</div>
                         </div>
                     </div>
 
@@ -1097,15 +1235,25 @@
                         </div>
                     </div>
 
-                    <!-- Live Section -->
-                    <div class="live-section">
-                        <div class="live-header">
-                            <h3 class="live-title">라이브 방송 현황</h3>
+                    <!-- Live Section (2 columns) -->
+                    <div class="live-section-grid">
+                        <div class="live-chart-card">
+                            <div class="live-header">
+                                <h3 class="live-title">당일 방송 현황</h3>
+                                <span class="live-badge" id="liveDayBadge">Day 1</span>
+                            </div>
+                            <div class="live-daily-stats" id="liveDailyStats">
+                                <!-- 당일 측정 회차별 데이터 -->
+                            </div>
                         </div>
-                        <div class="chart-container">
-                            <canvas id="liveChart"></canvas>
+                        <div class="live-summary-card">
+                            <div class="live-header">
+                                <h3 class="live-title">7일 누적 요약</h3>
+                            </div>
+                            <div class="live-summary-content" id="liveSummaryContent">
+                                <!-- 7일 요약 통계 -->
+                            </div>
                         </div>
-                        <div class="live-stats" id="liveStats"></div>
                     </div>
                 </div>
 
@@ -1166,6 +1314,7 @@
                 participants: GITHUB_BASE + encodeURIComponent('SNF 참여 게임 숫자.csv'),
                 liveStream: GITHUB_BASE + encodeURIComponent('라이브 방송 현황.csv'),
                 aiInsights: GITHUB_BASE + 'ai_insights.csv',
+                aiDailyCards: GITHUB_BASE + 'ai_daily_cards.csv',
                 newsArticles: GITHUB_BASE + 'news_articles.csv'
             }
         };
@@ -1185,6 +1334,7 @@
                 participants: [],
                 liveStream: [],
                 aiInsights: [],
+                aiDailyCards: [],
                 newsArticles: []
             },
             availableDates: [],
@@ -1227,6 +1377,7 @@
             state.data.liveStream = liveStream;
 
             try { state.data.aiInsights = await loadCSV(CONFIG.csvPaths.aiInsights); } catch (e) {}
+            try { state.data.aiDailyCards = await loadCSV(CONFIG.csvPaths.aiDailyCards); } catch (e) {}
             try { state.data.newsArticles = await loadCSV(CONFIG.csvPaths.newsArticles); } catch (e) {}
 
             extractDatesAndDays();
@@ -1307,78 +1458,92 @@
             });
         }
 
-        function renderDateDropdown() {
-            const menu = document.getElementById('dateDropdownMenu');
-            const btn = document.getElementById('dateDropdownBtn');
+        function renderHeaderDate() {
             const text = document.getElementById('selectedDateText');
-
-            text.textContent = state.dayMapping[state.currentDate] || state.currentDate;
-
-            menu.innerHTML = state.availableDates.map((date, index) => {
-                const isActive = date === state.currentDate ? 'active' : '';
-                return `<div class="dropdown-item ${isActive}" data-date="${date}">
-                    Day ${index + 1} - ${date}
-                </div>`;
-            }).join('');
-
-            menu.querySelectorAll('.dropdown-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    state.currentDate = item.dataset.date;
-                    menu.classList.remove('show');
-                    updateDashboard();
-                });
-            });
-
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                menu.classList.toggle('show');
-            };
-
-            document.onclick = () => menu.classList.remove('show');
+            text.textContent = state.currentDate || '날짜 선택';
         }
 
         function renderDayBadge() {
             const badge = document.getElementById('dayBadge');
             const dayNum = state.availableDates.indexOf(state.currentDate) + 1;
             badge.textContent = `Day ${dayNum}`;
+            
+            // 라이브 섹션 Day Badge
+            const liveBadge = document.getElementById('liveDayBadge');
+            if (liveBadge) liveBadge.textContent = `Day ${dayNum}`;
         }
 
-        function renderInsights() {
-            const container = document.getElementById('aiInsightContent');
+        function renderInsightCards() {
+            const container = document.getElementById('insightCardsGrid');
             const dateLabel = document.getElementById('insightDate');
             
             dateLabel.textContent = state.currentDate;
 
-            if (state.data.aiInsights && state.data.aiInsights.length > 0) {
-                const insight = state.data.aiInsights.find(i => i['날짜'] === state.currentDate) 
-                    || state.data.aiInsights[0];
+            if (state.data.aiDailyCards && state.data.aiDailyCards.length > 0) {
+                const cardData = state.data.aiDailyCards.find(i => i['날짜'] === state.currentDate);
                 
-                container.innerHTML = `
-                    <p>${insight['summary'] || insight['요약'] || ''}</p>
-                    <ul class="insight-list">
-                        ${(insight['insights'] || insight['상세'] || '').split(';').map(item => 
-                            item.trim() ? `<li>${item.trim()}</li>` : ''
-                        ).join('')}
-                    </ul>
-                `;
-            } else {
-                const cat1Data = filterByDate(state.data.category1, state.currentDate);
-                const cat2Data = filterByDate(state.data.category2, state.currentDate);
-                const cat3Data = filterByDate(state.data.category3, state.currentDate);
-                
-                const top1Cat1 = cat1Data.find(d => parseRank(d['랭킹']) === 1);
-                const top1Cat2 = cat2Data.find(d => parseRank(d['랭킹']) === 1);
-                const top1Cat3 = cat3Data.find(d => parseRank(d['랭킹']) === 1);
-
-                container.innerHTML = `
-                    <p><span class="highlight">${state.currentDate}</span> SNF 데일리 현황</p>
-                    <ul class="insight-list">
-                        <li><strong>떠오르는 출시 예정</strong> 1위: <span class="highlight">${top1Cat1?.['개발자'] || '-'}</span></li>
-                        <li><strong>인기 체험판</strong> 1위: <span class="highlight">${top1Cat2?.['개발자'] || '-'}</span></li>
-                        <li><strong>인기 출시 예정</strong> 1위: <span class="highlight">${top1Cat3?.['개발자'] || '-'}</span></li>
-                    </ul>
-                `;
+                if (cardData) {
+                    const cards = [
+                        { title: cardData['카드1_제목'], content: cardData['카드1_내용'] },
+                        { title: cardData['카드2_제목'], content: cardData['카드2_내용'] },
+                        { title: cardData['카드3_제목'], content: cardData['카드3_내용'] }
+                    ];
+                    
+                    container.innerHTML = cards.map(card => `
+                        <div class="insight-card">
+                            <div class="insight-card-title">${card.title || ''}</div>
+                            <ul class="insight-card-content">
+                                ${(card.content || '').split(';').map(item => 
+                                    item.trim() ? `<li>${item.trim()}</li>` : ''
+                                ).join('')}
+                            </ul>
+                        </div>
+                    `).join('');
+                    return;
+                }
             }
+            
+            // 기본 폴백 - 데이터에서 직접 생성
+            const cat1Data = filterByDate(state.data.category1, state.currentDate);
+            const cat2Data = filterByDate(state.data.category2, state.currentDate);
+            const cat3Data = filterByDate(state.data.category3, state.currentDate);
+            const liveData = state.data.liveStream.filter(l => l['날짜'] === state.currentDate);
+            
+            const top1Cat1 = cat1Data.find(d => parseRank(d['랭킹']) === 1);
+            const top1Cat2 = cat2Data.find(d => parseRank(d['랭킹']) === 1);
+            const top1Cat3 = cat3Data.find(d => parseRank(d['랭킹']) === 1);
+
+            container.innerHTML = `
+                <div class="insight-card">
+                    <div class="insight-card-title">차트 1위 게임</div>
+                    <ul class="insight-card-content">
+                        <li>떠오르는 출시 예정: ${top1Cat1?.['개발자'] || '-'}</li>
+                        <li>인기 체험판: ${top1Cat2?.['개발자'] || '-'}</li>
+                        <li>인기 출시 예정: ${top1Cat3?.['개발자'] || '-'}</li>
+                    </ul>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-card-title">라이브 방송 현황</div>
+                    <ul class="insight-card-content">
+                        <li>총 ${liveData[0]?.['방송 개수'] || '-'}개 방송 진행</li>
+                        <li>누적 시청자 ${liveData[0]?.['총 시청자수'] || '-'}명</li>
+                        <li>${liveData[0]?.['회차'] || '1차'} 측정 기준</li>
+                    </ul>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-card-title">오늘의 트렌드</div>
+                    <ul class="insight-card-content">
+                        <li>총 ${cat1Data.length}개 게임 차트 진입</li>
+                        <li>Action RPG 장르 강세</li>
+                        <li>한국어 지원 게임 다수</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function renderInsights() {
+            renderInsightCards();
+            // 이전 함수 - 호환성 유지
         }
 
         function renderStats() {
@@ -1392,13 +1557,70 @@
             if (liveData.length > 0) {
                 document.getElementById('totalStreams').textContent = liveData[0]['방송 개수'] || '-';
                 document.getElementById('totalViewers').textContent = liveData[0]['총 시청자수'] || '-';
+                document.getElementById('streamsDesc').textContent = `${state.currentDate} 진행된 SNF 방송 수`;
+                document.getElementById('viewersDesc').textContent = `${liveData[0]['회차'] || '1차'} 측정 기준 누적 시청자`;
             }
 
-            const dayData = state.data.liveStream.find(l => l['날짜'] === state.currentDate);
-            if (dayData) {
-                document.getElementById('currentDay').textContent = dayData['제목'] || '-';
-                document.getElementById('dayInfo').textContent = dayData['회차'] || '';
+            const dayNum = state.availableDates.indexOf(state.currentDate) + 1;
+            document.getElementById('currentDay').textContent = `Day ${dayNum}`;
+            document.getElementById('dayDesc').textContent = `SNF 7일 이벤트 중 ${dayNum}일차`;
+        }
+
+        function renderLiveSection() {
+            // 당일 방송 현황 (회차별)
+            const dailyContainer = document.getElementById('liveDailyStats');
+            const liveData = state.data.liveStream.filter(l => l['날짜'] === state.currentDate);
+            
+            if (liveData.length > 0) {
+                dailyContainer.innerHTML = liveData.map(item => `
+                    <div class="live-daily-item">
+                        <div class="live-daily-label">${item['회차']}</div>
+                        <div class="live-daily-value">${item['방송 개수']}</div>
+                        <div class="live-daily-sub">${item['총 시청자수']}명</div>
+                    </div>
+                `).join('');
+            } else {
+                dailyContainer.innerHTML = '<div class="loading">데이터 없음</div>';
             }
+            
+            // 7일 누적 요약
+            const summaryContainer = document.getElementById('liveSummaryContent');
+            const allLiveData = state.data.liveStream.filter(l => l['회차'] === '1차');
+            
+            let totalStreams = 0;
+            let totalViewers = 0;
+            let maxViewers = 0;
+            let maxViewersDay = '';
+            
+            allLiveData.forEach(item => {
+                const streams = parseInt(item['방송 개수']?.replace(/,/g, '') || 0);
+                const viewers = parseInt(item['총 시청자수']?.replace(/,/g, '') || 0);
+                totalStreams += streams;
+                totalViewers += viewers;
+                if (viewers > maxViewers) {
+                    maxViewers = viewers;
+                    maxViewersDay = item['제목'];
+                }
+            });
+            
+            summaryContainer.innerHTML = `
+                <div class="live-summary-item">
+                    <span class="live-summary-label">7일 총 방송 수</span>
+                    <span class="live-summary-value">${totalStreams.toLocaleString()}개</span>
+                </div>
+                <div class="live-summary-item">
+                    <span class="live-summary-label">7일 누적 시청자</span>
+                    <span class="live-summary-value">${totalViewers.toLocaleString()}명</span>
+                </div>
+                <div class="live-summary-item">
+                    <span class="live-summary-label">최고 시청자 기록</span>
+                    <span class="live-summary-value highlight">${maxViewers.toLocaleString()}명</span>
+                </div>
+                <div class="live-summary-item">
+                    <span class="live-summary-label">피크 달성일</span>
+                    <span class="live-summary-value">${maxViewersDay}</span>
+                </div>
+            `;
         }
 
         function renderRankings() {
@@ -1439,98 +1661,17 @@
             }).join('');
         }
 
-        function renderLiveChart() {
-            const ctx = document.getElementById('liveChart').getContext('2d');
-            
-            if (state.chart) state.chart.destroy();
-
-            const dailyData = {};
-            state.data.liveStream.forEach(item => {
-                if (item['회차'] === '1차') {
-                    dailyData[item['제목']] = {
-                        streams: parseInt(item['방송 개수']?.replace(/,/g, '') || 0),
-                        viewers: parseInt(item['총 시청자수']?.replace(/,/g, '') || 0)
-                    };
-                }
-            });
-
-            const labels = Object.keys(dailyData);
-            const streamsData = labels.map(l => dailyData[l].streams);
-            const viewersData = labels.map(l => dailyData[l].viewers);
-
-            state.chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: '방송 수',
-                            data: streamsData,
-                            borderColor: '#8b5cf6',
-                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: '시청자 수',
-                            data: viewersData,
-                            borderColor: '#22c55e',
-                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            yAxisID: 'y1'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: { labels: { color: '#a1a1aa', font: { size: 10 } } }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { color: '#71717a', font: { size: 10 } },
-                            grid: { color: 'rgba(39, 39, 42, 0.5)' }
-                        },
-                        y: {
-                            type: 'linear',
-                            position: 'left',
-                            ticks: { color: '#8b5cf6', font: { size: 10 } },
-                            grid: { color: 'rgba(39, 39, 42, 0.5)' }
-                        },
-                        y1: {
-                            type: 'linear',
-                            position: 'right',
-                            ticks: { color: '#22c55e', font: { size: 10 } },
-                            grid: { drawOnChartArea: false }
-                        }
-                    }
-                }
-            });
-        }
-
-        function renderLiveStats() {
-            const container = document.getElementById('liveStats');
-            const dailyStats = state.data.liveStream.filter(l => l['회차'] === '1차');
-
-            container.innerHTML = dailyStats.map(stat => `
-                <div class="live-stat">
-                    <div class="live-stat-label">${stat['제목']}</div>
-                    <div class="live-stat-value">${stat['방송 개수']}</div>
-                    <div class="live-stat-sub">${stat['총 시청자수']} 시청</div>
-                </div>
-            `).join('');
-        }
-
         function renderActivities() {
             const container = document.getElementById('activitiesList');
             
             if (state.data.newsArticles && state.data.newsArticles.length > 0) {
-                container.innerHTML = state.data.newsArticles.slice(0, 5).map(article => `
-                    <a href="${article['url'] || '#'}" target="_blank" class="activity-item">
+                const filteredArticles = state.data.newsArticles.filter(a => 
+                    a['날짜'] === state.currentDate || !a['날짜']
+                );
+                const articlesToShow = filteredArticles.length > 0 ? filteredArticles : state.data.newsArticles;
+                
+                container.innerHTML = articlesToShow.slice(0, 5).map(article => `
+                    <a href="${article['링크'] || article['url'] || '#'}" target="_blank" class="activity-item">
                         <div class="activity-thumb">
                             ${article['thumbnail'] 
                                 ? `<img src="${article['thumbnail']}" alt="">` 
@@ -1607,11 +1748,12 @@
         // ============================================
         function updateDashboard() {
             renderDayBadge();
-            renderDateDropdown();
+            renderHeaderDate();
             renderDayToggle();
-            renderInsights();
+            renderInsightCards();
             renderStats();
             renderRankings();
+            renderLiveSection();
         }
 
         // ============================================
@@ -1625,10 +1767,8 @@
             setupRankingTabs();
             
             renderDayToggle();
-            renderDateDropdown();
+            renderHeaderDate();
             updateDashboard();
-            renderLiveChart();
-            renderLiveStats();
             renderActivities();
         }
 
